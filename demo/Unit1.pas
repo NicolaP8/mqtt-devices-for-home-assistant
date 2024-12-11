@@ -792,6 +792,7 @@ begin
   ab.Pass := cfgMqttPass;
   ab.SSL  := cfgMqttSSL;
   with MyDevice do begin
+    ReConnectOnDisconnect := False; //Important: set only when you want the first connection! Eg. UseBirth := True try to connect!
     ReSubscribeOnConnect := True;
     UseBirth := True;
     UseLastWillAndTestament := True;
@@ -804,7 +805,6 @@ begin
     Broker.Pass := cfgMqttPass;
     Broker.SSL  := cfgMqttSSL;
 }
-    ReConnectOnDisconnect := False; //Important: set only when you want the first connection! Eg. UseBirth := True try to connect!
   end; //With
   Memo.Lines.Add('Created device: ' + MyDevice.Config[CDeviceNames[dnDevice_Identifiers]]);
 
