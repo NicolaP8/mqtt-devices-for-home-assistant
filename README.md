@@ -5,7 +5,7 @@ This library makes use of FPC MQTT Client Component https://github.com/prof7bit/
 
 This library is licensed with GPL 3.0 for personal use, contact me for commercial use.
 
-
+At moment only this sensor/device are supported:
 |  Supported sensors|Done|https://www.home-assistant.io/integrations/#search/mqtt|ObjectName|
 |-----------------------|--------|------------|-------|
 |MQTT Alarm control panel||||
@@ -40,4 +40,12 @@ This library is licensed with GPL 3.0 for personal use, contact me for commercia
 |MQTT Vacuum||||
 |MQTT Valve|yes|https://www.home-assistant.io/integrations/valve.mqtt/|TMQTTValve|
 |MQTT water heater||||
+
+There is a  file that contains the common parts and an abstract ancestor.
+Each other component resides in its own separate file containing the necessary definitions.
+There also a demo program, tested only in Windows; was developed primarly to check the components so is simple and crude.
+
+The mqtt_device_info.xls file contains the previous table and the data extracted from home-assistant pages, in tabular form.
+
+The library itself is compatible with Linux and my main usage is with Raspberry Pi!
 
