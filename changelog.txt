@@ -1,0 +1,14 @@
+MQTT Device Library
+
+2024.12.1 beta - 2024.12.11 Nicola Perotto nicola@nicolaperotto.it
+	Added
+    + Initial release
+	Changed
+	Deprecated
+	Removed
+	Fixed
+	Security
+  To do
+    + Birth & LWT
+    + TagScanner
+    + Update is incomplete
