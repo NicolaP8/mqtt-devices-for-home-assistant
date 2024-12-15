@@ -1,19 +1,5 @@
 Demo program
 
-2024.12.15 beta - Nicola Perotto nicola@nicolaperotto.it
-	Added
-    + initial state of device's components
-    + Birth & LWT
-	Changed
-    * updated component and cleanup
-	Deprecated
-	Removed
-	Fixed
-	Security
-  To do
-    + TagScanner
-    + Update is incomplete
-
 2024.12.1 beta - 2024.12.11 Nicola Perotto nicola@nicolaperotto.it
 	Added
     + Initial release
