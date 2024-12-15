@@ -1,6 +1,6 @@
 {
   https://www.home-assistant.io/integrations/tag.mqtt/
-  Version 2024.12.1
+  Version 2024.12.15
 }
 {$mode Delphi}
 unit mqTagScanner;
@@ -52,6 +52,7 @@ begin
   FConfigTopic  := tsnConfig;
   //FStateTopic   := not used
   //FCommandTopic := not used
+  //FIDTopic      := not used
 end;
 
 function TMQTTTagScanner.FromEnumToString(AConfigItem:Integer):string;

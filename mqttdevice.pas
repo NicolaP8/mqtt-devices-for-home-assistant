@@ -1,6 +1,6 @@
 {
   MQTT Abstract Device for Home Assistant: use descendants!
-  Version 2024.12.1
+  Version 2024.12.15
 }
 {$I+,R+,Q+}
 {$MODE DELPHI}
@@ -17,10 +17,10 @@ Const
 
   cfgHABirthTopic   : string  = 'homeassistant/status'; //default
   cfgHABirthPayload : string  = 'online';
-  cfgHABirthSubId             = 100; //is constant to be used in case stmt
+  cfgHABirthSubId   : integer = 100; //is constant to be used in case stmt
   cfgHALWTTopic     : string  = 'homeassistant/status';
   cfgHALWTPayload   : string  = 'offline';
-  cfgHALWTSubId               = 101;
+  cfgHALWTSubId     : integer = 101;
 
     
 Type
@@ -571,6 +571,7 @@ Type
     Function UnSubscribe(ATopic:string; Const Force:Boolean = False): Boolean;
     Procedure UnsubscribeAll;
     Procedure SubscribeAll;
+    Procedure SendConfigAll;
 
     Property Broker:TBroker read FBroker write FBroker;
     Property Client:TMQTTClient read FClient write FClient;
@@ -603,15 +604,17 @@ Type
     FParent : TMQTTDevice;
     FConfig : TValuePairs;
     FAvail : TAvailability;
+    FConfigTopic : EAllNames;
     FStateTopic : EAllNames;
     FCommandTopic : EAllNames;
-    FConfigTopic : EAllNames;
+    FIDTopic : EAllNames;
     FTopics : array of integer; //populate at creation and never changed, small
 
     FRetain, FRetainConfig : boolean;
     FClass : EHADeviceClasses;
     FOnReadData : TReadDataCallback;
     FQoS: integer;
+    FAddObjectId : Boolean;
     procedure SetDevice(AValue: TMQTTDevice);
   public
     Constructor Create;
@@ -636,6 +639,7 @@ Type
     Property QoS:integer read FQoS write FQoS;
     Property Retain:Boolean read FRetain write FRetain;
     Property RetainConfig:Boolean read FRetainConfig write FRetainConfig;
+    Property AddObjectId:Boolean read FAddObjectId write FAddObjectId;
 
     Property OnReadData:TReadDataCallback read FOnReadData write FOnReadData;
   end;
@@ -768,7 +772,7 @@ begin
   Inherited Destroy;
 end; //Destroy
 
-Function TMQTTDevice.Connect:Boolean;
+function TMQTTDevice.Connect: Boolean;
 Var
   me : TMQTTError;
 begin //because the client ha only a "complex" function to connect
@@ -884,9 +888,21 @@ begin
     Subscribe(FCallBacks[i].Topic, Integer(FCallBacks[i].SubId));
 end;
 
+procedure TMQTTDevice.SendConfigAll;
+Var
+  i : integer;
+begin
+  for i := 0 to Count -1 do begin
+    TMQTTBaseObject(Inherited Items[i]).SendConfig;
+    {$IFDEF LINUX}
+      CheckSynchronize;
+    {$ENDIF}
+  end;
+end;
+
 function TMQTTDevice.Subscribe(ATopic: string; const SubId: integer): Boolean;
 Var
-  i, n : integer;
+  n : integer;
   me : TMQTTError;
 begin
   Result := False;
@@ -909,7 +925,7 @@ end; //Subscribe
 
 function TMQTTDevice.UnSubscribe(ATopic: string; const Force: Boolean): Boolean;
 Var
-  i, n : integer;
+  n : integer;
   me : TMQTTError;
 begin
   Result := False;
@@ -1011,11 +1027,13 @@ begin
   FRetainConfig := True;
   FConfig := TValuePairs.Create;
   FAvail  := TAvailability.Create;
+  FAddObjectId := True;
   SetLength(FTopics, 0);
 
   //FConfigTopic  := ; //Must be set in descendants
   //FStateTopic   := ;
   //FCommandTopic := ;
+  //FIDTopic := ;
 end; //Create
 
 destructor TMQTTBaseObject.Destroy;
@@ -1049,6 +1067,10 @@ begin
       CHADeviceClasseNames[FClass],
       FParent.Config[CDeviceNames[dnDevice_Identifiers]] //@@@
       ]);
+    if FAddObjectId and (FIDTopic <> eanNone) then
+      v := FConfig.Values[FromEnumToString(Ord(FIDTopic))];
+      if v <> '' then
+        Result := Result + v + '/';
   end else begin
     Result := '';
   end; //if
@@ -1080,9 +1102,15 @@ begin
       t := FConfig.ValueAt[i];
       if (s = '') or (t = '') then Continue;
       if (s = 'config') then continue;
-      b := False;
+
+      b := False; //the topic is from the set of that can be subscribed?
       for j := Low(FTopics) to High(FTopics) do begin
         if s = FromEnumToString(FTopics[j]) then begin
+          if FAddObjectId and (FIDTopic <> eanNone) then begin
+            u := FConfig.Values[FromEnumToString(Ord(FIDTopic))];
+            if u <> '' then
+              t :=  u + '/' + t;
+          end;
           t := Format('%s/%s/%s/%s', [
             cfgHomeAssistant,
             CHADeviceClasseNames[FClass],
@@ -1093,11 +1121,12 @@ begin
         end;
       end; //for
 
-      if not b then
-        m := FromStringToEnum(s)
+      if b then
+        m := EAllNames(FTopics[j])
       else
-        m := EAllNames(FTopics[j]);
+        m := FromStringToEnum(s);
       case HATypeInfo[m] of
+        //@@@to do: complex types...
         hatString, hatList, hatMap, hatTemplate : u := Format('"%s": "%s"', [s, t]);
         hatBoolean : u := Format('"%s": %s', [s, t]);
         hatInteger : u := Format('"%s": %s', [s, t]);
@@ -1123,7 +1152,9 @@ begin
   cfgmsg := BuildConfigJSON;
   if cfgmsg = '' then Exit;
   cfgtop := FConfig.Values['config'];
-  if cfgtop = '' then cfgtop := 'config';
+  if cfgtop = '' then begin
+    cfgtop := 'config';
+  end;
   topic := TopicPrefix(FConfigTopic) + cfgtop;
   me := FParent.Client.Publish(Topic, cfgmsg, FQoS, FRetainConfig);
   Result := (me = mqeNoError);

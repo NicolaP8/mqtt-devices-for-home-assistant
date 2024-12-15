@@ -1,6 +1,6 @@
 {
   https://www.home-assistant.io/integrations/device_trigger.mqtt/
-  Version 2024.12.1
+  Version 2024.12.155
 }
 {$mode Delphi}
 unit mqDeviceTrigger;
@@ -110,6 +110,7 @@ begin
   FConfigTopic  := dtnConfig;
   //FStateTopic   := not used
   //FCommandTopic := not used
+  FIDTopic      := eanNone;
 end;
 
 function TMQTTDeviceTrigger.FromEnumToString(AConfigItem:Integer):string;

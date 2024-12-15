@@ -1,5 +1,22 @@
 MQTT Device Library
 
+2024.12.15 beta - Nicola Perotto nicola@nicolaperotto.it
+	Added
+    + TMQTTText: added Text and MaxLen member variables
+    + TMQTTBaseObject: new flag (AddObjectId) to use the id in topics names
+        useful in case of multiple objects of same type
+        Note: the default value (True) breaks old code, sorry but that was a beta!
+    + Receive Birth & LWT messages
+	Changed
+    * TMQTTSensor: CSensorDeviceClass corrected a value
+	Deprecated
+	Removed
+	Fixed
+	Security
+  To do
+    + TagScanner
+    + Update is incomplete
+
 2024.12.1 beta - 2024.12.11 Nicola Perotto nicola@nicolaperotto.it
 	Added
     + Initial release
@@ -12,3 +29,4 @@ MQTT Device Library
     + Birth & LWT
     + TagScanner
     + Update is incomplete
+

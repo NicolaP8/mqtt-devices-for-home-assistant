@@ -1,6 +1,6 @@
 {
   https://www.home-assistant.io/integrations/update.mqtt/
-  Version 2024.12.1
+  Version 2024.12.15
 }
 {$mode Delphi}
 unit mqUpdate;
@@ -101,6 +101,7 @@ begin
   FConfigTopic  := unConfig;
   FStateTopic   := unStateTopic;
   FCommandTopic := unCommandTopic;
+  FIDTopic      := unObjectId;
 end;
 
 function TMQTTUpdate.FromEnumToString(AConfigItem:Integer):string;

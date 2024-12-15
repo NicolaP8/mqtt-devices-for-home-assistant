@@ -1,6 +1,10 @@
 {
   https://www.home-assistant.io/integrations/text.mqtt/
-  Version 2024.12.1
+  Version 2024.12.1 - initial release
+
+  2024.12.15
+    added
+      + text and maxlen variables
 }
 {$mode Delphi}
 unit mqText;
@@ -70,6 +74,9 @@ Type
   TMQTTText = Class(TMQTTBaseObject)
     private
     public
+      Text : string;
+      MaxLen : integer;
+
       Constructor Create;
       function FromEnumToString(AConfigItem:Integer):string; Override;
       function FromStringToEnum(AName: string): EAllNames; Override;
@@ -96,6 +103,9 @@ begin
   FConfigTopic  := tnConfig;
   FStateTopic   := tnStateTopic;
   FCommandTopic := tnCommandTopic;
+  FIDTopic      := tnObjectId;
+
+  MaxLen := 255;
 end;
 
 function TMQTTText.FromEnumToString(AConfigItem:Integer):string;

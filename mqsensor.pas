@@ -1,6 +1,6 @@
 {
   https://www.home-assistant.io/integrations/sensor.mqtt/
-  Version 2024.12.1
+  Version 2024.12.15
 }
 {$mode Delphi}
 unit mqSensor;
@@ -132,7 +132,7 @@ Const
   );
 
   CSensorDeviceClass : array [ESensorDeviceClass] of string  = (
-    'None',
+    '', //bug in the doc: 'None' is not supported
     'apparent_power',
     'aqi',
     'atmospheric_pressure',
@@ -220,6 +220,7 @@ begin
   FConfigTopic  := snConfig;
   FStateTopic   := snStateTopic;
   //FCommandTopic := not used
+  FIDTopic      := snObjectId;
 end;
 
 function TMQTTSensor.FromEnumToString(AConfigItem:Integer):string;

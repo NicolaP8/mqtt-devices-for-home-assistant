@@ -1,6 +1,6 @@
 {
   https://www.home-assistant.io/integrations/switch.mqtt/
-  Version 2024.12.1
+  Version 2024.12.15
 }
 {$mode Delphi}
 unit mqSwitch;
@@ -113,6 +113,7 @@ begin
   FConfigTopic  := swnConfig;
   FStateTopic   := swnStateTopic;
   FCommandTopic := swnCommandTopic;
+  FIDTopic      := swnObjectId;
 
   //default values
   FConfig[CSwitchNames[swnCommandTopic]] := 'set'; //required
