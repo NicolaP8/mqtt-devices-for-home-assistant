@@ -1,6 +1,6 @@
 {
   https://www.home-assistant.io/integrations/lock.mqtt/
-  Version 2024.12.15
+  Version 2026.03.04
 }
 {$mode Delphi}
 unit mqLock;
@@ -11,7 +11,7 @@ Uses
   Classes, SysUtils, mqttDevice;
 
 Type
-  ELockNames = lonConfig..lonValueTemplate;
+  ELockNames = lonConfig..lonPlatform;
   {
     lonConfig,
     lonAvailabilityMode,
@@ -45,6 +45,9 @@ Type
     lonStateUnlocking,
     lonUniqueId,
     lonValueTemplate
+    lonDefaultEntityId,
+    lonEntityPicture,
+    lonPlatform,
   }
 
 Const
@@ -80,7 +83,10 @@ Const
     'state_unlocked',
     'state_unlocking',
     'unique_id',
-    'value_template'
+    'value_template',
+    'default_entity_id',
+    'entity_picture',
+    'platform'
   );
 
 Type
@@ -108,6 +114,7 @@ begin
   FConfig.Add(CLockNames, []);
   FTopics := [Ord(lonConfig), Ord(lonCommandTopic), Ord(lonStateTopic)];
   FConfig[CLockNames[lonCommandTopic]] := 'set'; //required
+  FConfig[CLockNames[lonPlatform]]     := 'lock'; //required
 
   FConfig[CLockNames[lonPayloadLock           ]] := 'LOCK';
   FConfig[CLockNames[lonPayloadUnlock         ]] := 'UNLOCK';
@@ -122,7 +129,7 @@ begin
   FConfigTopic  := lonConfig;
   FStateTopic   := lonStateTopic;
   FCommandTopic := lonCommandTopic;
-  FIDTopic      := lonObjectId;
+  FIDTopic      := lonDefaultEntityId;
 end;
 
 function TMQTTLock.FromEnumToString(AConfigItem:Integer):string;
@@ -137,7 +144,7 @@ Var
   m : EAllNames;
 begin
   Result := eanNone;
-  for m := lonConfig to lonValueTemplate do begin
+  for m := Low(ELockNames) to High(ELockNames) do begin
     if AName = CLockNames[m] then begin
       Result := m;
       Break;

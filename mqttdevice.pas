@@ -1,6 +1,6 @@
 {
   MQTT Abstract Device for Home Assistant: use descendants!
-  Version 2024.12.15
+  Version 2026.03.04
 }
 {$I+,R+,Q+}
 {$MODE DELPHI}
@@ -36,6 +36,7 @@ Type
   EHATypeInfo = (
     hatString,    //default == 0 == not initialized!
     hatBoolean,
+    hatFloat,
     hatInteger,
     hatList,
     hatMap,
@@ -43,7 +44,7 @@ Type
   );
 
   EHADeviceClasses = (
-    hdcBinarySensor, hdcButton, hdcCover, hdcDeviceTrigger, hdcFan, hdcLight, hdcLock, hdcSensor,
+    hdcBinarySensor, hdcButton, hdcCover, hdcDeviceTrigger, hdcFan, hdcLight, hdcLock, hdcNumber, hdcSensor,
     hdcSwitch, hdcTagScanner, hdcText, hdcUpdate, hdcValve
   );
 
@@ -85,6 +86,8 @@ Type
     bsnStateTopic,
     bsnUniqueId,
     bsnValueTemplate,
+    bsnDefaultEntityId,
+    bsnPlatform,
 
   //Button https://www.home-assistant.io/integrations/button.mqtt/
     bnConfig,
@@ -109,6 +112,9 @@ Type
     bnRetain,
     bnUniqueId,
     bnValueTemplate,
+    bnDefaultEntityId,
+    bnEntityPicture,
+    bnPlatform,
 
   //Cover https://www.home-assistant.io/integrations/cover.mqtt/
     cnConfig,
@@ -156,6 +162,10 @@ Type
     cnTiltStatusTopic,
     cnUniqueId,
     cnValueTemplate,
+    cnDefaultEntityId,
+    cnEntityPicture,
+    cnPayloadStopTilt,
+    cnPlatform,
 
   //EDeviceTriggerNames //https://www.home-assistant.io/integrations/device_trigger.mqtt/
     dtnConfig,
@@ -166,6 +176,7 @@ Type
     dtnType,
     dtnSubtype,
     dtnValueTemplate,
+    dtnPlatform,
 
   //EFanNames https://www.home-assistant.io/integrations/fan.mqtt/
     fnConfig,
@@ -215,6 +226,10 @@ Type
     fnStateTopic,
     fnUniqueId,
     fnValueTemplate,
+    fnDefaultEntityId,
+    fnEntityPicture,
+    fnStateValueTemplate,
+    fnPlatform,
 
   //ELightNames https://www.home-assistant.io/integrations/light.mqtt/
     linConfig,
@@ -283,6 +298,11 @@ Type
     linXyCommandTopic,
     linXyStateTopic,
     linXyValueTemplate,
+    linColorTempKelvin,
+    linDefaultEntityId,
+    linMaxKelvin,
+    linMinKelvin,
+    linPlatform,
 
   //ELockNames https://www.home-assistant.io/integrations/lock.mqtt/
     lonConfig,
@@ -317,6 +337,39 @@ Type
     lonStateUnlocking,
     lonUniqueId,
     lonValueTemplate,
+    lonDefaultEntityId,
+    lonEntityPicture,
+    lonPlatform,
+
+  //Number https://www.home-assistant.io/integrations/number.mqtt/
+    nnConfig,
+    nnAvailabilityMode,
+    nnAvailabilityTopic,
+    nnCommandTemplate,
+    nnCommandTopic,
+    nnDefaultEntityId,
+    nnDeviceClass,
+    nnEnabledByDefault,
+    nnEncoding,
+    nnEntityCategory,
+    nnEntityPicture,
+    nnIcon,
+    nnJsonAttributesTemplate,
+    nnJsonAttributesTopic,
+    nnMax,
+    nnMin,
+    nnMode,
+    nnName,
+    nnOptimistic,
+    nnPayloadReset,
+    nnPlatform,
+    nnQos,
+    nnRetain,
+    nnStateTopic,
+    nnStep,
+    nnUniqueId,
+    nnUnitOfMeasurement,
+    nnValueTemplate,
 
   // ESensorNames https://www.home-assistant.io/integrations/sensor.mqtt/
     snConfig,
@@ -344,6 +397,10 @@ Type
     snUniqueId,
     snUnitOfMeasurement,
     snValueTemplate,
+    snDefaultEntityId,
+    snEntityPicture,
+    snOptions,
+    snPlatform,
 
   //ESwitchNames
     swnConfig,
@@ -373,6 +430,9 @@ Type
     swnStateTopic,
     swnUniqueId,
     swnValueTemplate,
+    swnDefaultEntityId,
+    swnEntityPicture,
+    swnPlatform,
 
   //ETagScannerNames https://www.home-assistant.io/integrations/tag.mqtt/
     tsnConfig,
@@ -403,6 +463,8 @@ Type
     tnStateTopic,
     tnUniqueId,
     tnValueTemplate,
+    tnDefaultEntityId,
+    tnPlatform,
 
   //EUpdateNames https://www.home-assistant.io/integrations/update.mqtt/
     unConfig,
@@ -432,6 +494,8 @@ Type
     unTitle,
     unUniqueId,
     unValueTemplate,
+    unDefaultEntityId,
+    unPlatform,
 
   //EValveNames //https://www.home-assistant.io/integrations/valve.mqtt/
     vnConfig,
@@ -467,13 +531,16 @@ Type
     vnStateStopped,
     vnStateTopic,
     vnUniqueId,
-    vnValueTemplate
+    vnValueTemplate,
+    vnDefaultEntityId,
+    vnEntityPicture,
+    vnPlatform
   );
 
 Const
   //Note that the DeviceTrigger uses a different class name
   CHADeviceClasseNames : array[EHADeviceClasses] of string = (
-    'binary_sensor', 'button', 'cover', 'device_automation', 'fan', 'light', 'lock', 'sensor',
+    'binary_sensor', 'button', 'cover', 'device_automation', 'fan', 'light', 'lock', 'number', 'sensor',
     'switch', 'tag', 'text', 'update', 'valve'
   );
 
@@ -609,12 +676,13 @@ Type
     FCommandTopic : EAllNames;
     FIDTopic : EAllNames;
     FTopics : array of integer; //populate at creation and never changed, small
+    FLastError : TMQTTError;
 
     FRetain, FRetainConfig : boolean;
     FClass : EHADeviceClasses;
     FOnReadData : TReadDataCallback;
     FQoS: integer;
-    FAddObjectId : Boolean;
+    FAddDefaultEntityId : Boolean;
     procedure SetDevice(AValue: TMQTTDevice);
   public
     Constructor Create;
@@ -639,12 +707,31 @@ Type
     Property QoS:integer read FQoS write FQoS;
     Property Retain:Boolean read FRetain write FRetain;
     Property RetainConfig:Boolean read FRetainConfig write FRetainConfig;
-    Property AddObjectId:Boolean read FAddObjectId write FAddObjectId;
+    Property AddDefaultEntityId:Boolean read FAddDefaultEntityId write FAddDefaultEntityId;
+    Property LastError:TMQTTError read FLastError;
 
     Property OnReadData:TReadDataCallback read FOnReadData write FOnReadData;
   end;
 
-
+Const
+  CMQTTErrorDescription : array[TMQTTError] of string = (
+    'No Error',
+    'Already Connected',
+    'Not Connected',
+    'Host Not Found',
+    'Connect Failed',
+    'Invalid Topic Filter',
+    'Invalid Subscription ID',
+    'Empty Topic',
+    'Not Subscribed',
+    'Invalid QoS',
+    'Retain Unavail',
+    'Not Yet Implemented',
+    'SSL Not Supported',
+    'SSL Verify Error',
+    'Cert File Not Found',
+    'Key File Not Found'
+  );
 
 Implementation
 
@@ -1027,8 +1114,9 @@ begin
   FRetainConfig := True;
   FConfig := TValuePairs.Create;
   FAvail  := TAvailability.Create;
-  FAddObjectId := True;
+  FAddDefaultEntityId := True;
   SetLength(FTopics, 0);
+  FLastError := mqeNoError;
 
   //FConfigTopic  := ; //Must be set in descendants
   //FStateTopic   := ;
@@ -1067,7 +1155,7 @@ begin
       CHADeviceClasseNames[FClass],
       FParent.Config[CDeviceNames[dnDevice_Identifiers]] //@@@
       ]);
-    if FAddObjectId and (FIDTopic <> eanNone) then
+    if FAddDefaultEntityId and (FIDTopic <> eanNone) then
       v := FConfig.Values[FromEnumToString(Ord(FIDTopic))];
       if v <> '' then
         Result := Result + v + '/';
@@ -1083,7 +1171,7 @@ Var
   n : integer;
   b : boolean;
   m : EAllNames;
-begin
+begin //<discovery_prefix>/<component>/[<node_id>/]<object_id>/config
   Result := '';
   try
     //add device json
@@ -1106,7 +1194,7 @@ begin
       b := False; //the topic is from the set of that can be subscribed?
       for j := Low(FTopics) to High(FTopics) do begin
         if s = FromEnumToString(FTopics[j]) then begin
-          if FAddObjectId and (FIDTopic <> eanNone) then begin
+          if FAddDefaultEntityId and (FIDTopic <> eanNone) then begin
             u := FConfig.Values[FromEnumToString(Ord(FIDTopic))];
             if u <> '' then
               t :=  u + '/' + t;
@@ -1130,6 +1218,7 @@ begin
         hatString, hatList, hatMap, hatTemplate : u := Format('"%s": "%s"', [s, t]);
         hatBoolean : u := Format('"%s": %s', [s, t]);
         hatInteger : u := Format('"%s": %s', [s, t]);
+        hatFloat : u := Format('"%s": %s', [s, t]);
       end; //case
       if (c <> '') then c := c + ', ';
       c := c + u;
@@ -1151,13 +1240,14 @@ begin
   if not Assigned(FParent) then Exit;
   cfgmsg := BuildConfigJSON;
   if cfgmsg = '' then Exit;
+  if not FParent.CheckClient then Exit;
   cfgtop := FConfig.Values['config'];
   if cfgtop = '' then begin
     cfgtop := 'config';
   end;
   topic := TopicPrefix(FConfigTopic) + cfgtop;
-  me := FParent.Client.Publish(Topic, cfgmsg, FQoS, FRetainConfig);
-  Result := (me = mqeNoError);
+  FLastError := FParent.Client.Publish(Topic, cfgmsg, FQoS, FRetainConfig);
+  Result := (FLastError = mqeNoError);
 end; //SendConfig
 
 function TMQTTBaseObject.SendState:Boolean;
@@ -1169,9 +1259,10 @@ begin
   if not Assigned(FParent) then Exit;
   if Assigned(FOnReadData) then begin
     if not FOnReadData(value) then Exit;
+    if not FParent.CheckClient then Exit;
     topic := TopicPrefix(FStateTopic) + FConfig.Values[FromEnumToString(Ord(FStateTopic))];
-    me := FParent.FClient.Publish(Topic, Value, FQoS, FRetain);
-    Result := (me = mqeNoError);
+    FLastError := FParent.FClient.Publish(Topic, Value, FQoS, FRetain);
+    Result := (FLastError = mqeNoError);
   end;
 end; //SendState
 
@@ -1183,8 +1274,8 @@ begin
   Result := False;
   if not Assigned(FParent) then Exit;
   topic := TopicPrefix(AStateTopic) + FConfig.Values[FromEnumToString(Ord(AStateTopic))];
-  me := FParent.FClient.Publish(Topic, AValue, FQoS, FRetain);
-  Result := (me = mqeNoError);
+  FLastError := FParent.FClient.Publish(Topic, AValue, FQoS, FRetain);
+  Result := (FLastError = mqeNoError);
 end; //SendStateTopic
 
 function TMQTTBaseObject.Subscribe(ATopic: string; const SubId: integer): Boolean;

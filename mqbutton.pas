@@ -1,6 +1,6 @@
 {
   https://www.home-assistant.io/integrations/button.mqtt/
-  Version 2024.12.15
+  Version 2026.03.04
 }
 {$mode Delphi}
 unit mqButton;
@@ -11,7 +11,7 @@ Uses
   Classes, SysUtils, mqttDevice;
 
 Type
-  EButtonNames = bnConfig..bnValueTemplate;
+  EButtonNames = bnConfig..bnPlatform;
   {
     bnConfig,
     bnAvailabilityMode,
@@ -35,6 +35,9 @@ Type
     bnRetain,
     bnUniqueId,
     bnValueTemplate
+    bnDefaultEntityId
+    bnEntityPicture,
+    bnPlatform
   }
 
   EButtonDeviceClass = ( //bnDeviceClass
@@ -67,7 +70,10 @@ Const
     'qos',
     'retain',
     'unique_id',
-    'value_template'
+    'value_template',
+    'default_entity_id',
+    'entity_picture',
+    'platform'
   );
 
   CButtonDeviceClass : array [EButtonDeviceClass] of string = (
@@ -101,11 +107,12 @@ begin
 
   FConfig[CButtonNames[bnCommandTopic]] := 'set'; //required
   FConfig[CButtonNames[bnPayloadPress]] := 'PRESS';
+  FConfig[CButtonNames[bnPlatform]] := 'button'; //required
 
   FConfigTopic  := bnConfig;
   //FStateTopic   := not used
   FCommandTopic := bnCommandTopic;
-  FIDTopic      := bnObjectId;
+  FIDTopic      := bnDefaultEntityId;
 end;
 
 function TMQTTButton.FromEnumToString(AConfigItem:Integer):string;
@@ -120,7 +127,7 @@ Var
   m : EAllNames;
 begin
   Result := eanNone;
-  for m := bnConfig to bnValueTemplate do begin
+  for m := Low(EButtonNames) to High(EButtonNames) do begin
     if AName = CButtonNames[m] then begin
       Result := m;
       Break;

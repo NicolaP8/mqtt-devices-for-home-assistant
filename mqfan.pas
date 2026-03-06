@@ -1,6 +1,6 @@
 {
   https://www.home-assistant.io/integrations/fan.mqtt/
-  Version 2024.12.15
+  Version 2026.03.04
 }
 {$mode Delphi}
 unit mqFan;
@@ -11,7 +11,7 @@ Uses
   Classes, SysUtils, mqttDevice;
 
 Type
-  EFanNames = fnConfig..fnValueTemplate;
+  EFanNames = fnConfig..fnPlatform;
   {
     fnConfig,
     fnAvailabilityMode,
@@ -60,6 +60,10 @@ Type
     fnStateTopic,
     fnUniqueId,
     fnValueTemplate
+    fnDefaultEntityId,
+    fnEntityPicture,
+    fnStateValueTemplate,
+    fnPlatform
   }
 
 Const
@@ -110,7 +114,11 @@ Const
     'speed_range_min',
     'state_topic',
     'unique_id',
-    'value_template'
+    'value_template',
+    'default_entity_id',
+    'entity_picture',
+    'state_value_template',
+    'platform'
   );
 
 Const //this is missing from the docs
@@ -151,10 +159,11 @@ begin
   FConfigTopic  := fnConfig;
   FStateTopic   := fnStateTopic;
   FCommandTopic := fnCommandTopic;
-  FIDTopic      := fnObjectId;
+  FIDTopic      := fnDefaultEntityId;
 
   //default values
   FConfig[CFanNames[fnCommandTopic]] := 'set'; //required
+  FConfig[CFanNames[fnPlatform]]     := 'fan'; //required
   FConfig[CFanNames[fnPayloadOff]] := 'OFF';
   FConfig[CFanNames[fnPayloadOn]] := 'ON';
   Config[CFanNames[fnPayloadOscillationOff]] := 'oscillate_off';
@@ -177,7 +186,7 @@ Var
   m : EAllNames;
 begin
   Result := eanNone;
-  for m := fnConfig to fnValueTemplate do begin
+  for m := Low(EFanNames) to High(EFanNames) do begin
     if AName = CFanNames[m] then begin
       Result := m;
       Break;
@@ -214,4 +223,5 @@ Initialization
   HATypeInfo[fnSpeedRangeMax              ] := hatInteger;
   HATypeInfo[fnSpeedRangeMin              ] := hatInteger;
   HATypeInfo[fnValueTemplate              ] := hatTemplate;
+  HATypeInfo[fnStateValueTemplate         ] := hatTemplate;
 end.

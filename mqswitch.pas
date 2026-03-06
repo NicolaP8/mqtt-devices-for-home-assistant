@@ -1,6 +1,6 @@
 {
   https://www.home-assistant.io/integrations/switch.mqtt/
-  Version 2024.12.15
+  Version 2026.03.04
 }
 {$mode Delphi}
 unit mqSwitch;
@@ -11,7 +11,7 @@ Uses
   Classes, SysUtils, mqttDevice;
 
 Type
-  ESwitchNames = swnConfig..swnValueTemplate;
+  ESwitchNames = swnConfig..swnPlatform;
   {
     swnConfig,
     swnAvailabilityMode,
@@ -40,6 +40,9 @@ Type
     swnStateTopic,
     swnUniqueId,
     swnValueTemplate
+    swnDefaultEntityId,
+    swnEntityPicture,
+    swnPlatform,
   }
 
   ESwitchDeviceClass = (
@@ -76,7 +79,10 @@ Const
     'state_on',
     'state_topic',
     'unique_id',
-    'value_template'
+    'value_template',
+    'default_entity_id',
+    'entity_picture',
+    'platform'
   );
 
   CSwitchDeviceClass : array [ESwitchDeviceClass] of string  = (
@@ -113,10 +119,11 @@ begin
   FConfigTopic  := swnConfig;
   FStateTopic   := swnStateTopic;
   FCommandTopic := swnCommandTopic;
-  FIDTopic      := swnObjectId;
+  FIDTopic      := swnDefaultEntityId;
 
   //default values
   FConfig[CSwitchNames[swnCommandTopic]] := 'set'; //required
+  FConfig[CSwitchNames[swnPlatform]] := 'switch'; //required
   FConfig[CSwitchNames[swnPayloadOn]] := 'ON';
   FConfig[CSwitchNames[swnPayloadOff]] := 'OFF';
 end;
@@ -133,7 +140,7 @@ Var
   m : EAllNames;
 begin
   Result := eanNone;
-  for m := swnConfig to swnValueTemplate do begin
+  for m := Low(ESwitchNames) to High(ESwitchNames) do begin
     if AName = CSwitchNames[m] then begin
       Result := m;
       Break;

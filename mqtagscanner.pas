@@ -1,6 +1,6 @@
 {
   https://www.home-assistant.io/integrations/tag.mqtt/
-  Version 2024.12.15
+  Version 2026.03.04
 }
 {$mode Delphi}
 unit mqTagScanner;
@@ -67,7 +67,7 @@ Var
   m : EAllNames;
 begin
   Result := eanNone;
-  for m := tsnConfig to tsnValueTemplate do begin
+  for m := Low(ETagScannerNames) to High(ETagScannerNames) do begin
     if AName = CTagScannerNames[m] then begin
       Result := m;
       Break;

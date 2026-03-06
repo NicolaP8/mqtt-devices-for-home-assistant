@@ -1,6 +1,6 @@
 {
   https://www.home-assistant.io/integrations/binary_sensor.mqtt/
-  Version 2024.12.15
+  Version 2026.03.04
 }
 {$mode Delphi}
 unit mqBinarySensor;
@@ -11,7 +11,7 @@ uses
   Classes, SysUtils, mqttDevice;
 
 Type
-  EBinarySensorNames = bsnConfig..bsnValueTemplate;
+  EBinarySensorNames = bsnConfig..bsnPlatform;
   {
     bsnConfig,
     bsnAvailabilityMode,
@@ -27,7 +27,7 @@ Type
     bsnJsonAttributesTemplate,
     bsnJsonAttributesTopic,
     bsnName,
-    bsnObjectId,
+    bsnObjectId,  //@@@deprecated 2026.04
     bsnOffDelay,
     bsnPayloadAvailable,
     bsnPayloadNotAvailable,
@@ -36,7 +36,9 @@ Type
     bsnQos,
     bsnStateTopic,
     bsnUniqueId,
-    bsnValueTemplate
+    bsnValueTemplate,
+    bsnDefaultEntityId,
+    bsnPlatform
   }
 
   EBinarySensorDeviceClass = ( //values for bsnDeviceClass
@@ -96,7 +98,9 @@ Const
     'qos',
     'state_topic',
     'unique_id',
-    'value_template'
+    'value_template',
+    'default_entity_id',
+    'platform'
   );
 
   CBinarySensorDeviceClass : array[EBinarySensorDeviceClass] of string = (
@@ -157,17 +161,19 @@ begin
   FConfigTopic  := bsnConfig;
   FStateTopic   := bsnStateTopic;
   //FCommandTopic := not used
-  FIDTopic      := bsnObjectId;
+  FIDTopic      := bsnDefaultEntityId;
 
   //default values
   FConfig[CBinarySensorNames[bsnPayloadOn]] := 'ON';
   FConfig[CBinarySensorNames[bsnPayloadOff]] := 'OFF';
   FConfig[CBinarySensorNames[bsnStateTopic]] := 'state'; //required
+  FConfig[CBinarySensorNames[bsnPlatform]] := 'binary_sensor'; //required
 end;
 
 function TMQTTBinarySensor.FromEnumToString(AConfigItem:Integer):string;
 begin
   Result := '';
+  //this is necessary because EBinarySensorNames is a subset of EAllNames
   if (AConfigItem < Ord(Low(EBinarySensorNames))) or (AConfigItem > Ord(High(EBinarySensorNames))) then Exit;
   Result := CBinarySensorNames[EBinarySensorNames(AConfigItem)];
 end; //FromEnumToString
@@ -177,7 +183,7 @@ Var
   m : EAllNames;
 begin
   Result := eanNone;
-  for m := bsnConfig to bsnValueTemplate do begin
+  for m := Low(EBinarySensorNames) to High(EBinarySensorNames) do begin
     if AName = CBinarySensorNames[m] then begin
       Result := m;
       Break;

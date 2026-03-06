@@ -1,10 +1,6 @@
 {
   https://www.home-assistant.io/integrations/text.mqtt/
-  Version 2024.12.1 - initial release
-
-  2024.12.15
-    added
-      + text and maxlen variables
+  Version 2026.03.04
 }
 {$mode Delphi}
 unit mqText;
@@ -15,7 +11,7 @@ Uses
   Classes, SysUtils, mqttDevice;
 
 Type
-  ETextNames = tnConfig..tnValueTemplate;
+  ETextNames = tnConfig..tnPlatform;
   {
     tnConfig,
     tnAvailabilityTopic,
@@ -40,6 +36,8 @@ Type
     tnStateTopic,
     tnUniqueId,
     tnValueTemplate
+    tnDefaultEntityId,
+    tnPlatform,
   }
 
 Const
@@ -66,7 +64,9 @@ Const
     'retain',
     'state_topic',
     'unique_id',
-    'value_template'
+    'value_template',
+    'default_entity_id',
+    'platform'
   );
 
 Type
@@ -95,6 +95,7 @@ begin
   FConfig.Add(CTextNames, []);
   FTopics := [Ord(tnConfig), Ord(tnCommandTopic), Ord(tnStateTopic)];
   FConfig[CTextNames[tnCommandTopic]] := 'state'; //required
+  FConfig[CTextNames[tnPlatform]] := 'text'; //required
 
   FConfig[CTextNames[tnMax]] := '255';
   FConfig[CTextNames[tnMin]] := '0';
@@ -103,7 +104,7 @@ begin
   FConfigTopic  := tnConfig;
   FStateTopic   := tnStateTopic;
   FCommandTopic := tnCommandTopic;
-  FIDTopic      := tnObjectId;
+  FIDTopic      := tnDefaultEntityId;
 
   MaxLen := 255;
 end;
@@ -120,7 +121,7 @@ Var
   m : EAllNames;
 begin
   Result := eanNone;
-  for m := tnConfig to tnValueTemplate do begin
+  for m := Low(ETextNames) to High(ETextNames) do begin
     if AName = CTextNames[m] then begin
       Result := m;
       Break;

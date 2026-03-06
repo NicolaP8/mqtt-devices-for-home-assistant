@@ -1,6 +1,6 @@
 {
   https://www.home-assistant.io/integrations/device_trigger.mqtt/
-  Version 2024.12.155
+  Version 2026.03.04
 }
 {$mode Delphi}
 unit mqDeviceTrigger;
@@ -11,7 +11,7 @@ Uses
   Classes, SysUtils, mqttDevice;
 
 Type
-  EDeviceTriggerNames = dtnConfig..dtnValueTemplate;
+  EDeviceTriggerNames = dtnConfig..dtnPlatform;
   {
     dtnConfig,
     dtnAutomationType,
@@ -21,6 +21,7 @@ Type
     dtnType,
     dtnSubtype,
     dtnValueTemplate
+    dtnPlatform
   }
 
   EDeviceTriggerType = (
@@ -54,7 +55,8 @@ Const
     'topic',
     'type',
     'subtype',
-    'value_template'
+    'value_template',
+    'platform'
   );
 
   CDeviceTriggerType : array [EDeviceTriggerType] of string  = (
@@ -106,6 +108,7 @@ begin
   FConfig[CDeviceTriggerNames[dtnTopic]]          := 'trigger';
   FConfig[CDeviceTriggerNames[dtnType]]           := 'button_short_press';
   FConfig[CDeviceTriggerNames[dtnSubtype]]        := CDeviceTriggerSubtype[dtsTurnOn];
+  FConfig[CDeviceTriggerNames[dtnPlatform]]       := 'device_automation'; //required
 
   FConfigTopic  := dtnConfig;
   //FStateTopic   := not used
@@ -125,7 +128,7 @@ Var
   m : EAllNames;
 begin
   Result := eanNone;
-  for m := dtnConfig to dtnValueTemplate do begin
+  for m := Low(EDeviceTriggerNames) to High(EDeviceTriggerNames) do begin
     if AName = CDeviceTriggerNames[m] then begin
       Result := m;
       Break;

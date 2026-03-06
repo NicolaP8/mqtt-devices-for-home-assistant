@@ -1,6 +1,6 @@
 {
   https://www.home-assistant.io/integrations/cover.mqtt/
-  Version 2024.12.15
+  Version 2026.03.04
 }
 {$mode Delphi}
 unit mqCover;
@@ -11,7 +11,7 @@ Uses
   Classes, SysUtils, mqttDevice;
 
 Type
-  ECoverNames = cnConfig..cnValueTemplate;
+  ECoverNames = cnConfig..cnPlatform;
   {
     cnConfig,
     cnAvailabilityMode,
@@ -58,6 +58,10 @@ Type
     cnTiltStatusTopic,
     cnUniqueId,
     cnValueTemplate
+    cnDefaultEntityId
+    cnEntityPicture
+    cnPayloadStopTilt
+    cnPlatform
   }
 
   ECoverDeviceClass = (
@@ -120,7 +124,11 @@ Const
     'tilt_status_template',
     'tilt_status_topic',
     'unique_id',
-    'value_template'
+    'value_template',
+    'default_entity_id',
+    'entity_picture',
+    'payload_stop_tilt',
+    'platform'
   );
 
   CCoverDeviceClass : array [ECoverDeviceClass] of string  = (
@@ -187,11 +195,12 @@ begin
   FConfig[CCoverNames[cnTiltMax]] := '100';
   FConfig[CCoverNames[cnTiltMin]] := '0';
   FConfig[CCoverNames[cnTiltOpenedValue]] := '100';
+  FConfig[CCoverNames[cnPlatform]] := 'cover'; //required
 
   FConfigTopic  := cnConfig;
   FStateTopic   := cnStateTopic; //also cnPositionTopic and cnTiltStatusTopic
   FCommandTopic := cnCommandTopic;
-  FIDTopic      := cnObjectId;
+  FIDTopic      := cnDefaultEntityId
 end;
 
 function TMQTTCover.FromEnumToString(AConfigItem:Integer):string;
@@ -206,7 +215,7 @@ Var
   m : EAllNames;
 begin
   Result := eanNone;
-  for m := cnConfig to cnValueTemplate do begin
+  for m := Low(ECoverNames) to High(ECoverNames) do begin
     if AName = CCoverNames[m] then begin
       Result := m;
       Break;

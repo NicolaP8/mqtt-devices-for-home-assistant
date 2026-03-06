@@ -1,6 +1,6 @@
 {
   https://www.home-assistant.io/integrations/update.mqtt/
-  Version 2024.12.15
+  Version 2026.03.04
 }
 {$mode Delphi}
 unit mqUpdate;
@@ -11,7 +11,7 @@ Uses
   Classes, SysUtils, mqttDevice;
 
 Type
-  EUpdateNames = unConfig..unValueTemplate;
+  EUpdateNames = unConfig..unPlatform;
   {
     unConfig,
     unAvailabilityTopic,
@@ -40,6 +40,8 @@ Type
     unTitle,
     unUniqueId,
     unValueTemplate
+    unDefaultEntityId,
+    unPlatform,
   }
 
 Const
@@ -70,7 +72,9 @@ Const
     'state_topic',
     'title',
     'unique_id',
-    'value_template'
+    'value_template',
+    'default_entity_id',
+    'platform'
   );
 
 Type
@@ -96,12 +100,13 @@ begin
   FConfig.Add(CUpdateNames, []);
   FTopics := [Ord(unConfig), Ord(unCommandTopic), Ord(unLatestVersionTopic), Ord(unStateTopic)];
 
+  FConfig[CUpdateNames[unPlatform]] := 'update'; //required
   FConfig[CUpdateNames[unDisplayPrecision]] := '0';
 
   FConfigTopic  := unConfig;
   FStateTopic   := unStateTopic;
   FCommandTopic := unCommandTopic;
-  FIDTopic      := unObjectId;
+  FIDTopic      := unDefaultEntityId;
 end;
 
 function TMQTTUpdate.FromEnumToString(AConfigItem:Integer):string;
@@ -116,7 +121,7 @@ Var
   m : EAllNames;
 begin
   Result := eanNone;
-  for m := unConfig to unValueTemplate do begin
+  for m := Low(EUpdateNames) to High(EUpdateNames) do begin
     if AName = CUpdateNames[m] then begin
       Result := m;
       Break;

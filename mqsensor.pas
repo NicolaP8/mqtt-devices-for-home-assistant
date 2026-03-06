@@ -1,6 +1,6 @@
 {
   https://www.home-assistant.io/integrations/sensor.mqtt/
-  Version 2024.12.15
+  Version 2026.03.04
 }
 {$mode Delphi}
 unit mqSensor;
@@ -11,7 +11,7 @@ Uses
   Classes, SysUtils, mqttDevice;
 
 Type
-  ESensorNames = snConfig..snValueTemplate;
+  ESensorNames = snConfig..snPlatform;
   {
     snConfig,
     snAvailabilityMode,
@@ -38,6 +38,10 @@ Type
     snUniqueId,
     snUnitOfMeasurement,
     snValueTemplate
+    snDefaultEntityId,
+    snEntityPicture,
+    snOptions,
+    snPlatform,
   }
 
   ESensorDeviceClass = (
@@ -128,7 +132,11 @@ Const
     'state_topic',
     'unique_id',
     'unit_of_measurement',
-    'value_template'
+    'value_template',
+    'default_entity_id',
+    'entity_picture',
+    'options',
+    'platform'
   );
 
   CSensorDeviceClass : array [ESensorDeviceClass] of string  = (
@@ -216,11 +224,12 @@ begin
   FTopics := [Ord(snConfig), Ord(snStateTopic)];
 
   FConfig[CSensorNames[snStateTopic]] := 'state'; //required
+  FConfig[CSensorNames[snPlatform]] := 'sensor'; //required
 
   FConfigTopic  := snConfig;
   FStateTopic   := snStateTopic;
   //FCommandTopic := not used
-  FIDTopic      := snObjectId;
+  FIDTopic      := snDefaultEntityId;
 end;
 
 function TMQTTSensor.FromEnumToString(AConfigItem:Integer):string;
@@ -235,7 +244,7 @@ Var
   m : EAllNames;
 begin
   Result := eanNone;
-  for m := snConfig to snValueTemplate do begin
+  for m := Low(ESensorNames) to High(ESensorNames) do begin
     if AName = CSensorNames[m] then begin
       Result := m;
       Break;
@@ -263,4 +272,5 @@ Initialization
   HATypeInfo[snSuggestedDisplayPrecision] := hatInteger;
   HATypeInfo[snQos]                       := hatInteger;
   HATypeInfo[snValueTemplate]             := hatTemplate;
+  //HATypeInfo[snOptions]                   := hatList;
 end.

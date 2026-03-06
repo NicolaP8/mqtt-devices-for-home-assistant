@@ -1,6 +1,6 @@
 {
   https://www.home-assistant.io/integrations/light.mqtt/
-  Version 2024.12.15
+  Version 2026.03.04
 }
 {$mode Delphi}
 unit mqLight;
@@ -11,7 +11,7 @@ Uses
   Classes, SysUtils, mqttDevice;
 
 Type
-  ELightNames = linConfig..linXyValueTemplate;
+  ELightNames = linConfig..linPlatform;
   {
     linConfig,
     linAvailabilityMode,
@@ -79,6 +79,11 @@ Type
     linXyCommandTopic,
     linXyStateTopic,
     linXyValueTemplate
+    linColorTempKelvin,
+    linDefaultEntityId,
+    linMaxKelvin,
+    linMinKelvin,
+    linPlatform,
   }
 
 Const
@@ -148,7 +153,12 @@ Const
        'xy_command_template',
        'xy_command_topic',
        'xy_state_topic',
-       'xy_value_template'
+       'xy_value_template',
+       'color_temp_kelvin',
+       'default_entity_id',
+       'max_kelvin',
+       'min_kelvin',
+       'platform'
      );
 
 Type
@@ -183,6 +193,7 @@ begin
     Ord(linXyCommandTopic), Ord(linXyStateTopic)];
 
   FConfig[CLightNames[linCommandTopic]] := 'set'; //required
+  FConfig[CLightNames[linPlatform]]     := 'light'; //required
   FConfig[CLightNames[linBrightnessScale]] := '255';
   FConfig[CLightNames[linPayloadOn]] := 'ON';
   FConfig[CLightNames[linPayloadOff]] := 'OFF';
@@ -191,7 +202,7 @@ begin
   FConfigTopic  := linConfig;
   FStateTopic   := linStateTopic;
   FCommandTopic := linCommandTopic;
-  FIDTopic      := linObjectId;
+  FIDTopic      := linDefaultEntityId;
 end;
 
 function TMQTTLight.FromEnumToString(AConfigItem:Integer):string;
@@ -206,7 +217,7 @@ Var
   m : EAllNames;
 begin
   Result := eanNone;
-  for m := linConfig to linXyValueTemplate do begin
+  for m := Low(ELightNames) to High(ELightNames) do begin
     if AName = CLightNames[m] then begin
       Result := m;
       Break;
@@ -254,4 +265,6 @@ Initialization
   HATypeInfo[linWhiteScale                  ] := hatInteger;
   HATypeInfo[linXyCommandTemplate           ] := hatTemplate;
   HATypeInfo[linXyValueTemplate             ] := hatTemplate;
+  HATypeInfo[linMaxKelvin                   ] := hatInteger;
+  HATypeInfo[linMinKelvin                   ] := hatInteger;
 end.

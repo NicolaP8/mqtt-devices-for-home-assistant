@@ -1,5 +1,11 @@
 MQTT Device Library
 
+2026.03.04 - Nicola Perotto nicola@nicolaperotto.it
+  Added
+    + TMQTTNumber
+  Removed
+    - removed ObjectId because deprecated by Home Assistant
+
 2024.12.15 beta - Nicola Perotto nicola@nicolaperotto.it
 	Added
     + TMQTTText: added Text and MaxLen member variables

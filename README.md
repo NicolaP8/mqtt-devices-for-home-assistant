@@ -1,7 +1,7 @@
 # mqtt-devices-for-home-assistant
 A library for interfacing a device with home-assistant using MQTT for FreePascal
 
-This library makes use of FPC MQTT Client Component https://github.com/prof7bit/fpc-mqtt-client that you need to download separately.
+This library makes use of FPC MQTT Client Component https://github.com/prof7bit/fpc-mqtt-client but you need to use my fork https://github.com/NicolaP8/fpc-mqtt-client that has a small correction.
 
 This library is licensed with GPL 3.0 for personal use, contact me for commercial use.
 
@@ -26,7 +26,7 @@ At moment only this sensor/device are supported:
 |MQTT Light|yes|https://www.home-assistant.io/integrations/light.mqtt/|TMQTTLight|
 |MQTT Lock|yes|https://www.home-assistant.io/integrations/lock.mqtt/|TMQTTLock|
 |MQTT notify||||
-|MQTT Number||||
+|MQTT Number|yes|https://www.home-assistant.io/integrations/number.mqtt/|TMQTTNumber|
 |MQTT room presence||||
 |MQTT Scene||||
 |MQTT Select||||
@@ -47,5 +47,11 @@ There also a demo program, tested only in Windows; was developed primarly to che
 
 The mqtt_device_info.xls file contains the previous table and the data extracted from home-assistant pages, in tabular form.
 
-The library itself is compatible with Linux and my main usage is with Raspberry Pi!
+The library itself is compatible with Linux and Windows, my main usage is with Raspberry Pi!
 
+#Changelog
+Version of 2026.03.04
+  Added
+    + TMQTTNumber
+  Removed
+    - removed ObjectId because deprecated by Home Assistant

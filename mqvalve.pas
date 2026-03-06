@@ -1,6 +1,6 @@
 {
   https://www.home-assistant.io/integrations/valve.mqtt/
-  Version 2024.12.15
+  Version 2026.03.04
 }
 {$mode Delphi}
 unit mqValve;
@@ -11,7 +11,7 @@ Uses
   Classes, SysUtils, mqttDevice;
 
 Type
-  EValveNames = vnConfig..vnValueTemplate;
+  EValveNames = vnConfig..vnPlatform;
   {
     vnConfig,
     vnAvailabilityMode,
@@ -47,6 +47,9 @@ Type
     vnStateTopic,
     vnUniqueId,
     vnValueTemplate
+    vnDefaultEntityId,
+    vnEntityPicture,
+    vnPlatform,
   }
 
 Const
@@ -84,7 +87,10 @@ Const
     'state_stopped',
     'state_topic',
     'unique_id',
-    'value_template'
+    'value_template',
+    'default_entity_id',
+    'entity_picture',
+    'platform'
   );
 
 Type                                                         //@@@this is yet missing in HA
@@ -124,6 +130,7 @@ begin
   FConfig.Add(CValveNames, []);
   FTopics := [Ord(vnConfig), Ord(vnCommandTopic), Ord(vnStateTopic)];
 
+  FConfig[CValveNames[vnPlatform]] := 'valve'; //Required
   FConfig[CValveNames[vnPositionClosed]] := '0';
   FConfig[CValveNames[vnPositionOpen]] := '100';
 
@@ -141,7 +148,7 @@ begin
   FConfigTopic  := vnConfig;
   FStateTopic   := vnStateTopic;
   FCommandTopic := vnCommandTopic;
-  FIDTopic      := vnObjectId;
+  FIDTopic      := vnDefaultEntityId;
 end;
 
 function TMQTTValve.FromEnumToString(AConfigItem:Integer):string;
@@ -156,7 +163,7 @@ Var
   m : EAllNames;
 begin
   Result := eanNone;
-  for m := vnConfig to vnValueTemplate do begin
+  for m := Low(EValveNames) to High(EValveNames) do begin
     if AName = CValveNames[m] then begin
       Result := m;
       Break;
