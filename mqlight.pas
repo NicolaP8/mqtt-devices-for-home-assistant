@@ -1,6 +1,6 @@
 {
   https://www.home-assistant.io/integrations/light.mqtt/
-  Version 2026.03.04
+  Version 2026.03.12
 }
 {$mode Delphi}
 unit mqLight;
@@ -202,7 +202,7 @@ begin
   FConfigTopic  := linConfig;
   FStateTopic   := linStateTopic;
   FCommandTopic := linCommandTopic;
-  FIDTopic      := linDefaultEntityId;
+  FIDTopic      := linUniqueId;
 end;
 
 function TMQTTLight.FromEnumToString(AConfigItem:Integer):string;

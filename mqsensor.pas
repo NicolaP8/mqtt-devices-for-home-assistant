@@ -1,6 +1,6 @@
 {
   https://www.home-assistant.io/integrations/sensor.mqtt/
-  Version 2026.03.04
+  Version 2026.03.12
 }
 {$mode Delphi}
 unit mqSensor;
@@ -229,7 +229,7 @@ begin
   FConfigTopic  := snConfig;
   FStateTopic   := snStateTopic;
   //FCommandTopic := not used
-  FIDTopic      := snDefaultEntityId;
+  FIDTopic      := snUniqueId;
 end;
 
 function TMQTTSensor.FromEnumToString(AConfigItem:Integer):string;

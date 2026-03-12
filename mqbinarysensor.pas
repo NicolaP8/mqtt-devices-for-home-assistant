@@ -1,6 +1,6 @@
 {
   https://www.home-assistant.io/integrations/binary_sensor.mqtt/
-  Version 2026.03.04
+  Version 2026.03.12
 }
 {$mode Delphi}
 unit mqBinarySensor;
@@ -161,7 +161,7 @@ begin
   FConfigTopic  := bsnConfig;
   FStateTopic   := bsnStateTopic;
   //FCommandTopic := not used
-  FIDTopic      := bsnDefaultEntityId;
+  FIDTopic      := bsnUniqueId;
 
   //default values
   FConfig[CBinarySensorNames[bsnPayloadOn]] := 'ON';

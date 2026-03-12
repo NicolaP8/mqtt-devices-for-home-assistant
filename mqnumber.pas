@@ -1,6 +1,6 @@
 {
   https://www.home-assistant.io/integrations/number.mqtt/
-  Version 2026.03.04
+  Version 2026.03.12
 
   State: The MQTT topic subscribed to receive number values. An empty payload is ignored.
   Command: The MQTT topic to publish commands to change the number.
@@ -109,7 +109,7 @@ begin
   FConfigTopic  := nnConfig;
   FStateTopic   := nnStateTopic;
   FCommandTopic := nnCommandTopic;
-  FIDTopic      := nnDefaultEntityId;
+  FIDTopic      := nnUniqueId;
 end;
 
 function TMQTTNumber.FromEnumToString(AConfigItem:Integer):string;

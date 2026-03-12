@@ -1,6 +1,6 @@
 {
   MQTT Abstract Device for Home Assistant: use descendants!
-  Version 2026.03.04
+  Version 2026.03.12
 }
 {$I+,R+,Q+}
 {$MODE DELPHI}
@@ -12,15 +12,16 @@ Uses
   Classes, SysUtils, Contnrs, mqtt;
 
 Const
-  cfgHomeAssistant      = 'homeassistant';
-  cfgConfigTopic        = 'config';
+  cfgHomeAssistant            = 'homeassistant';
+  cfgConfigTopic              = 'config';
+  cfgFirstCommandId : integer = 1000; //if needed set before using Subscribe or AssignCommandID
+  cfgHABirthSubId   : integer = 999; //is constant to be used in case stmt
+  cfgHALWTSubId     : integer = 998;
 
   cfgHABirthTopic   : string  = 'homeassistant/status'; //default
   cfgHABirthPayload : string  = 'online';
-  cfgHABirthSubId   : integer = 100; //is constant to be used in case stmt
   cfgHALWTTopic     : string  = 'homeassistant/status';
   cfgHALWTPayload   : string  = 'offline';
-  cfgHALWTSubId     : integer = 101;
 
     
 Type
@@ -635,7 +636,8 @@ Type
     Function BuildConfigJSON:string;
 
     Function Subscribe(ATopic:string; Const SubId:integer):Boolean;
-    Function UnSubscribe(ATopic:string; Const Force:Boolean = False): Boolean;
+    Function UnSubscribe(ATopic:string; Const Force:Boolean = False): Boolean; Overload;
+    function UnSubscribe(ACommandId:Integer; Const Force:Boolean = False): Boolean; Overload;
     Procedure UnsubscribeAll;
     Procedure SubscribeAll;
     Procedure SendConfigAll;
@@ -682,7 +684,7 @@ Type
     FClass : EHADeviceClasses;
     FOnReadData : TReadDataCallback;
     FQoS: integer;
-    FAddDefaultEntityId : Boolean;
+    FAddEntityId : Boolean;
     procedure SetDevice(AValue: TMQTTDevice);
   public
     Constructor Create;
@@ -691,12 +693,13 @@ Type
     Function TopicPrefix(Const AConfigItem:EAllNames):string;
 
     Function BuildConfigJSON:string; Virtual;
-    Function SendConfig:Boolean;
-    Function SendState:Boolean;
+    Function SendConfig:Boolean; Virtual;
+    Function SendState:Boolean; Virtual;
     Function SendStateTopic(Const AStateTopic:EAllNames; Const AValue:string):Boolean;
     Function Subscribe(ATopic:string; Const SubId:integer):Boolean; Overload;
     function Subscribe(ATopic: EAllNames; const SubId: integer): Boolean; Overload; Virtual; Abstract;
-    Function UnSubscribe(ATopic:string):Boolean;
+    Function UnSubscribe(ATopic:string):Boolean; Overload;
+    function UnSubscribe(ACommandId: Integer):Boolean; Overload;
 
     Function FromEnumToString(AConfigItem:Integer):string; Virtual; Abstract;
     Function FromStringToEnum(AName:string):EAllNames; Virtual; Abstract;
@@ -707,10 +710,10 @@ Type
     Property QoS:integer read FQoS write FQoS;
     Property Retain:Boolean read FRetain write FRetain;
     Property RetainConfig:Boolean read FRetainConfig write FRetainConfig;
-    Property AddDefaultEntityId:Boolean read FAddDefaultEntityId write FAddDefaultEntityId;
+    Property AddEntityId:Boolean read FAddEntityId write FAddEntityId;
     Property LastError:TMQTTError read FLastError;
 
-    Property OnReadData:TReadDataCallback read FOnReadData write FOnReadData;
+    Property OnReadData:TReadDataCallback read FOnReadData write FOnReadData; //called from SendState to get fresh data from hardware
   end;
 
 Const
@@ -732,6 +735,9 @@ Const
     'Cert File Not Found',
     'Key File Not Found'
   );
+
+Procedure AssignCommandID(Var MyNewID:Integer);
+
 
 Implementation
 
@@ -1026,6 +1032,24 @@ begin
   Result := (me = mqeNoError);
 end; //UnSubscribe
 
+function TMQTTDevice.UnSubscribe(ACommandId:Integer; Const Force:Boolean = False):Boolean;
+Var
+  i, n : integer;
+  me : TMQTTError;
+begin
+  Result := False;
+  if not CheckClient then Exit;
+
+  for i := Low(FCallBacks) to High(FCallBacks) do begin
+    if FCallBacks[i].SubId = ACommandId then begin
+      me := FClient.UnSubscribe(FCallBacks[i].Topic);
+      CallBackDelete(i);
+      Result := (me = mqeNoError);
+      Break;
+    end;
+  end;
+end; //UnSubscribe
+
 function TMQTTDevice.BuildConfigJSON:string;
 Var
   i : integer;
@@ -1114,7 +1138,7 @@ begin
   FRetainConfig := True;
   FConfig := TValuePairs.Create;
   FAvail  := TAvailability.Create;
-  FAddDefaultEntityId := True;
+  FAddEntityId := True;
   SetLength(FTopics, 0);
   FLastError := mqeNoError;
 
@@ -1155,7 +1179,7 @@ begin
       CHADeviceClasseNames[FClass],
       FParent.Config[CDeviceNames[dnDevice_Identifiers]] //@@@
       ]);
-    if FAddDefaultEntityId and (FIDTopic <> eanNone) then
+    if FAddEntityId and (FIDTopic <> eanNone) then
       v := FConfig.Values[FromEnumToString(Ord(FIDTopic))];
       if v <> '' then
         Result := Result + v + '/';
@@ -1194,7 +1218,7 @@ begin //<discovery_prefix>/<component>/[<node_id>/]<object_id>/config
       b := False; //the topic is from the set of that can be subscribed?
       for j := Low(FTopics) to High(FTopics) do begin
         if s = FromEnumToString(FTopics[j]) then begin
-          if FAddDefaultEntityId and (FIDTopic <> eanNone) then begin
+          if FAddEntityId and (FIDTopic <> eanNone) then begin
             u := FConfig.Values[FromEnumToString(Ord(FIDTopic))];
             if u <> '' then
               t :=  u + '/' + t;
@@ -1266,7 +1290,8 @@ begin
   end;
 end; //SendState
 
-function TMQTTBaseObject.SendStateTopic(Const AStateTopic:EAllNames; Const AValue:string):Boolean;
+function TMQTTBaseObject.SendStateTopic(const AStateTopic: EAllNames;
+  const AValue: string): Boolean;
 Var
   topic : string;
   me : TMQTTError;
@@ -1294,6 +1319,26 @@ begin
   if not Assigned(FParent) then Exit;
   Result := FParent.UnSubscribe(ATopic);
 end; //UnSubscribe
+
+function TMQTTBaseObject.UnSubscribe(ACommandId: Integer): Boolean;
+begin
+  Result := False;
+  if not Assigned(FParent) then Exit;
+  Result := FParent.UnSubscribe(ACommandId);
+end; //UnSubscribe
+
+//******************************************************************************
+Const
+  LastUsedId : integer = -1; //uses only positive numbers
+
+Procedure AssignCommandID(Var MyNewID:Integer);
+begin //warning: no check on numbers!
+  if LastUsedId < 0 then
+    LastUsedId := cfgFirstCommandId
+  else
+    Inc(LastUsedId);
+  MyNewID := LastUsedId;
+end; //AssignCommandID
 
 Initialization
   HATypeInfo[eanNone] := hatString;

@@ -1,6 +1,6 @@
 {
   https://www.home-assistant.io/integrations/text.mqtt/
-  Version 2026.03.04
+  Version 2026.03.12
 }
 {$mode Delphi}
 unit mqText;
@@ -8,7 +8,7 @@ unit mqText;
 interface
 
 Uses
-  Classes, SysUtils, mqttDevice;
+  Classes, SysUtils, mqttDevice, mqtt;
 
 Type
   ETextNames = tnConfig..tnPlatform;
@@ -81,6 +81,8 @@ Type
       function FromEnumToString(AConfigItem:Integer):string; Override;
       function FromStringToEnum(AName: string): EAllNames; Override;
       function Subscribe(ATopic: EAllNames; const SubId: integer): Boolean; Override;
+
+      function SendState:Boolean; Override;
   end;
 
 
@@ -104,7 +106,7 @@ begin
   FConfigTopic  := tnConfig;
   FStateTopic   := tnStateTopic;
   FCommandTopic := tnCommandTopic;
-  FIDTopic      := tnDefaultEntityId;
+  FIDTopic      := tnUniqueId;
 
   MaxLen := 255;
 end;
@@ -138,6 +140,24 @@ begin
   CompleteTopic := TopicPrefix(ATopic) + Config[CTextNames[ATopic]];
   Result := FParent.Subscribe(CompleteTopic, SubId);
 end; //Subscribe
+
+function TMQTTText.SendState:Boolean;
+Var
+  topic, value : string;
+  me : TMQTTError;
+begin
+  Result := False;
+  if not Assigned(FParent) then Exit;
+  if Assigned(FOnReadData) then begin
+    if not FOnReadData(value) then Exit;
+  end else begin
+    Value := Text; //uses internal data
+  end;
+  if not FParent.CheckClient then Exit;
+  topic := TopicPrefix(FStateTopic) + FConfig.Values[FromEnumToString(Ord(FStateTopic))];
+  FLastError := FParent.Client.Publish(Topic, Value, FQoS, FRetain);
+  Result := (FLastError = mqeNoError);
+end; //SendState
 
 Initialization
   HATypeInfo[tnAvailabilityTemplate   ] := hatTemplate;

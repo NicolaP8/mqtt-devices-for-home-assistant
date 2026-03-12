@@ -1,6 +1,6 @@
 {
   https://www.home-assistant.io/integrations/button.mqtt/
-  Version 2026.03.04
+  Version 2026.03.12
 }
 {$mode Delphi}
 unit mqButton;
@@ -112,7 +112,7 @@ begin
   FConfigTopic  := bnConfig;
   //FStateTopic   := not used
   FCommandTopic := bnCommandTopic;
-  FIDTopic      := bnDefaultEntityId;
+  FIDTopic      := bnUniqueId;
 end;
 
 function TMQTTButton.FromEnumToString(AConfigItem:Integer):string;

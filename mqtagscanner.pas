@@ -1,6 +1,6 @@
 {
   https://www.home-assistant.io/integrations/tag.mqtt/
-  Version 2026.03.04
+  Version 2026.03.12
 }
 {$mode Delphi}
 unit mqTagScanner;

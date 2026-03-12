@@ -1,6 +1,6 @@
 {
   https://www.home-assistant.io/integrations/cover.mqtt/
-  Version 2026.03.04
+  Version 2026.03.12
 }
 {$mode Delphi}
 unit mqCover;
@@ -200,7 +200,7 @@ begin
   FConfigTopic  := cnConfig;
   FStateTopic   := cnStateTopic; //also cnPositionTopic and cnTiltStatusTopic
   FCommandTopic := cnCommandTopic;
-  FIDTopic      := cnDefaultEntityId
+  FIDTopic      := cnUniqueId;
 end;
 
 function TMQTTCover.FromEnumToString(AConfigItem:Integer):string;

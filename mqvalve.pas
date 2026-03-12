@@ -1,6 +1,6 @@
 {
   https://www.home-assistant.io/integrations/valve.mqtt/
-  Version 2026.03.04
+  Version 2026.03.12
 }
 {$mode Delphi}
 unit mqValve;
@@ -148,7 +148,7 @@ begin
   FConfigTopic  := vnConfig;
   FStateTopic   := vnStateTopic;
   FCommandTopic := vnCommandTopic;
-  FIDTopic      := vnDefaultEntityId;
+  FIDTopic      := vnUniqueId;
 end;
 
 function TMQTTValve.FromEnumToString(AConfigItem:Integer):string;

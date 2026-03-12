@@ -1,6 +1,6 @@
 {
   https://www.home-assistant.io/integrations/fan.mqtt/
-  Version 2026.03.04
+  Version 2026.03.12
 }
 {$mode Delphi}
 unit mqFan;
@@ -159,7 +159,7 @@ begin
   FConfigTopic  := fnConfig;
   FStateTopic   := fnStateTopic;
   FCommandTopic := fnCommandTopic;
-  FIDTopic      := fnDefaultEntityId;
+  FIDTopic      := fnUniqueId;
 
   //default values
   FConfig[CFanNames[fnCommandTopic]] := 'set'; //required

@@ -1,6 +1,6 @@
 {
   https://www.home-assistant.io/integrations/lock.mqtt/
-  Version 2026.03.04
+  Version 2026.03.12
 }
 {$mode Delphi}
 unit mqLock;
@@ -129,7 +129,7 @@ begin
   FConfigTopic  := lonConfig;
   FStateTopic   := lonStateTopic;
   FCommandTopic := lonCommandTopic;
-  FIDTopic      := lonDefaultEntityId;
+  FIDTopic      := lonUniqueId;
 end;
 
 function TMQTTLock.FromEnumToString(AConfigItem:Integer):string;
