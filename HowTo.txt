@@ -1,0 +1,10 @@
+- add the support for a new device type
+  + copy from a similar mqDevice.pas and modify
+    + add new configuration variables, eg. EDateNames and respective CDateNames
+    + in Constructor Set required topics and default values
+    + in Initialization set configuration formats
+  + in mqttDevice.pas
+    + add new device in EHADeviceClasses and CHADeviceClasseNames
+    + add new 'names" in EAllNames
+    * Note: to minimize the risk of breaking old code add new items at end, not in alphabetical order.
+

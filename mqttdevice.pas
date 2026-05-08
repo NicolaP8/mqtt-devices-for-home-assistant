@@ -1,6 +1,6 @@
 {
   MQTT Abstract Device for Home Assistant: use descendants!
-  Version 2026.03.12
+  Version 2026.05.07
 }
 {$I+,R+,Q+}
 {$MODE DELPHI}
@@ -46,7 +46,7 @@ Type
 
   EHADeviceClasses = (
     hdcBinarySensor, hdcButton, hdcCover, hdcDeviceTrigger, hdcFan, hdcLight, hdcLock, hdcNumber, hdcSensor,
-    hdcSwitch, hdcTagScanner, hdcText, hdcUpdate, hdcValve
+    hdcSwitch, hdcTagScanner, hdcText, hdcUpdate, hdcValve, hdcDate, hdcDateTime, hdcTime
   );
 
   //common
@@ -535,14 +535,82 @@ Type
     vnValueTemplate,
     vnDefaultEntityId,
     vnEntityPicture,
-    vnPlatform
+    vnPlatform,
+
+  //EDateNames //https://www.home-assistant.io/integrations/date.mqtt/
+    ddConfig,
+    ddAvailabilityMode,
+    ddAvailabilityTemplate,
+    ddAvailabilityTopic,
+    ddCommandTemplate,
+    ddCommandTopic,
+    ddDefaultEntityId,
+    ddEnabledByDefault,
+    ddEncoding,
+    ddEntityCategory,
+    ddEntityPicture,
+    ddJsonAttributesTemplate,
+    ddJsonAttributesTopic,
+    ddName,
+    ddPlatform,
+    ddQos,
+    ddRetain,
+    ddStateTopic,
+    ddUniqueId,
+    ddValueTemplate,
+
+  //EDateTimeNames //https://www.home-assistant.io/integrations/datetime.mqtt/
+    dtConfig,
+    dtAvailabilityMode,
+    dtAvailabilityTemplate,
+    dtAvailabilityTopic,
+    dtCommandTemplate,
+    dtCommandTopic,
+    dtDefaultEntityId,
+    dtEnabledByDefault,
+    dtEncoding,
+    dtEntityCategory,
+    dtEntityPicture,
+    dtJsonAttributesTemplate,
+    dtJsonAttributesTopic,
+    dtName,
+    dtPlatform,
+    dtQos,
+    dtRetain,
+    dtStateTopic,
+    dtTimezone,
+    dtUniqueId,
+    dtValueTemplate,
+
+  //ETimeNames //https://www.home-assistant.io/integrations/time.mqtt/
+    ttConfig,
+    ttAvailabilityMode,
+    ttAvailabilityTemplate,
+    ttAvailabilityTopic,
+    ttCommandTemplate,
+    ttCommandTopic,
+    ttDefaultEntityId,
+    ttEnabledByDefault,
+    ttEncoding,
+    ttEntityCategory,
+    ttEntityPicture,
+    ttIcon,
+    ttJsonAttributesTemplate,
+    ttJsonAttributesTopic,
+    ttName,
+    ttPlatform,
+    ttQos,
+    ttRetain,
+    ttStateTopic,
+    ttUniqueId,
+    ttValueTemplate
   );
 
 Const
   //Note that the DeviceTrigger uses a different class name
   CHADeviceClasseNames : array[EHADeviceClasses] of string = (
     'binary_sensor', 'button', 'cover', 'device_automation', 'fan', 'light', 'lock', 'number', 'sensor',
-    'switch', 'tag', 'text', 'update', 'valve'
+    'switch', 'tag', 'text', 'update', 'valve', 'date', 'datetime', 'time'
   );
 
   CDeviceNames : array [EDeviceNames] of string  = (

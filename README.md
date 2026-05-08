@@ -6,40 +6,39 @@ This library makes use of FPC MQTT Client Component https://github.com/prof7bit/
 This library is licensed with GPL 3.0 for personal use, contact me for commercial use.
 
 At moment only this sensor/device are supported:
-|  Supported sensors|Done|https://www.home-assistant.io/integrations/#search/mqtt|ObjectName|
+|Supported sensors|Done|https://www.home-assistant.io/integrations/#search/mqtt|ObjectName|
 |-----------------------|--------|------------|-------|
-|MQTT Alarm control panel||||
-|MQTT binary sensor|yes|https://www.home-assistant.io/integrations/binary_sensor.mqtt/|TMQTTBinarySensor|
-|MQTT button|yes|https://www.home-assistant.io/integrations/button.mqtt/|TMQTTButton|
-|MQTT Camera||||
-|MQTT Cover|yes|https://www.home-assistant.io/integrations/cover.mqtt/|TMQTTCover|
-|MQTT device tracker||||
-|MQTT Device trigger|yes|https://www.home-assistant.io/integrations/device_trigger.mqtt/|TMQTTDeviceTrigger|
-|MQTT Event||||
-|MQTT Eventstream||||
-|MQTT Fan|yes|https://www.home-assistant.io/integrations/fan.mqtt/|TMQTTFan|
-|MQTT Humidifier||||
-|MQTT HVAC||||
-|MQTT Image||||
-|MQTT JSON||||
-|MQTT lawn mower||||
-|MQTT Light|yes|https://www.home-assistant.io/integrations/light.mqtt/|TMQTTLight|
-|MQTT Lock|yes|https://www.home-assistant.io/integrations/lock.mqtt/|TMQTTLock|
-|MQTT notify||||
-|MQTT Number|yes|https://www.home-assistant.io/integrations/number.mqtt/|TMQTTNumber|
-|MQTT room presence||||
-|MQTT Scene||||
-|MQTT Select||||
-|MQTT Sensor|yes|https://www.home-assistant.io/integrations/sensor.mqtt/|TMQTTSensor|
-|MQTT Siren||||
-|MQTT Statestream||||
-|MQTT Switch|yes|https://www.home-assistant.io/integrations/switch.mqtt/|TMQTTSwitch|
-|MQTT tag scanner|no|https://www.home-assistant.io/integrations/tag.mqtt/|TMQTTTagScanner|
-|MQTT Text|yes|https://www.home-assistant.io/integrations/text.mqtt/|TMQTTText|
-|MQTT Update|yes|https://www.home-assistant.io/integrations/update.mqtt/|TMQTTUpdate|
-|MQTT Vacuum||||
-|MQTT Valve|yes|https://www.home-assistant.io/integrations/valve.mqtt/|TMQTTValve|
-|MQTT water heater||||
+|Alarm control panel||https://www.home-assistant.io/integrations/alarm_control_panel.mqtt/||
+|Binary sensor|yes|https://www.home-assistant.io/integrations/binary_sensor.mqtt/|TMQTTBinarySensor|
+|Button|yes|https://www.home-assistant.io/integrations/button.mqtt/|TMQTTButton|
+|Camera||https://www.home-assistant.io/integrations/camera.mqtt/||
+|Cover|yes|https://www.home-assistant.io/integrations/cover.mqtt/|TMQTTCover|
+|Climate (HVAC)||https://www.home-assistant.io/integrations/climate.mqtt/||
+|Date||https://www.home-assistant.io/integrations/date.mqtt/|TMQTTDate|
+|DateTime||https://www.home-assistant.io/integrations/datetime.mqtt/|TMQTTDateTime|
+|Device tracker||https://www.home-assistant.io/integrations/device_tracker.mqtt/||
+|Device trigger|yes|https://www.home-assistant.io/integrations/device_trigger.mqtt/|TMQTTDeviceTrigger|
+|Event||https://www.home-assistant.io/integrations/event.mqtt/||
+|Fan|yes|https://www.home-assistant.io/integrations/fan.mqtt/|TMQTTFan|
+|Humidifier||https://www.home-assistant.io/integrations/humidifier.mqtt/||
+|Image||https://www.home-assistant.io/integrations/image.mqtt/||
+|Lawn mower||https://www.home-assistant.io/integrations/lawn_mower.mqtt/||
+|Light|yes|https://www.home-assistant.io/integrations/light.mqtt/|TMQTTLight|
+|Lock|yes|https://www.home-assistant.io/integrations/lock.mqtt/|TMQTTLock|
+|Notify||https://www.home-assistant.io/integrations/notify.mqtt/||
+|Number|yes|https://www.home-assistant.io/integrations/number.mqtt/||
+|Scene||https://www.home-assistant.io/integrations/scene.mqtt/||
+|Select||https://www.home-assistant.io/integrations/select.mqtt/||
+|Sensor|yes|https://www.home-assistant.io/integrations/sensor.mqtt/|TMQTTSensor|
+|Siren||https://www.home-assistant.io/integrations/siren.mqtt/||
+|Switch|yes|https://www.home-assistant.io/integrations/switch.mqtt/|TMQTTSwitch|
+|Tag scanner|no|https://www.home-assistant.io/integrations/tag.mqtt/|TMQTTTagScanner|
+|Text|yes|https://www.home-assistant.io/integrations/text.mqtt/|TMQTTText|
+|Time||https://www.home-assistant.io/integrations/time.mqtt/|TMQTTTime|
+|Update|yes|https://www.home-assistant.io/integrations/update.mqtt/|TMQTTUpdate|
+|Vacuum||https://www.home-assistant.io/integrations/vacuum.mqtt/||
+|Valve|yes|https://www.home-assistant.io/integrations/valve.mqtt/|TMQTTValve|
+|Water heater||https://www.home-assistant.io/integrations/water_heater.mqtt/||
 
 There is a  file that contains the common parts and an abstract ancestor.
 Each other component resides in its own separate file containing the necessary definitions.
@@ -50,6 +49,10 @@ The mqtt_device_info.xls file contains the previous table and the data extracted
 The library itself is compatible with Linux and Windows, my main usage is with Raspberry Pi!
 
 #Changelog
+Version of 2026.05.07
+  Added
+    + TMQTTDate, TMQTTDateTime, TMQTTTime
+
 Version of 2026.03.04
   Added
     + TMQTTNumber
