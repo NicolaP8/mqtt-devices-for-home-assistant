@@ -14,8 +14,8 @@ At moment only this sensor/device are supported:
 |Camera||https://www.home-assistant.io/integrations/camera.mqtt/||
 |Cover|yes|https://www.home-assistant.io/integrations/cover.mqtt/|TMQTTCover|
 |Climate (HVAC)||https://www.home-assistant.io/integrations/climate.mqtt/||
-|Date||https://www.home-assistant.io/integrations/date.mqtt/|TMQTTDate|
-|DateTime||https://www.home-assistant.io/integrations/datetime.mqtt/|TMQTTDateTime|
+|Date|yes|https://www.home-assistant.io/integrations/date.mqtt/|TMQTTDate|
+|DateTime|yes|https://www.home-assistant.io/integrations/datetime.mqtt/|TMQTTDateTime|
 |Device tracker||https://www.home-assistant.io/integrations/device_tracker.mqtt/||
 |Device trigger|yes|https://www.home-assistant.io/integrations/device_trigger.mqtt/|TMQTTDeviceTrigger|
 |Event||https://www.home-assistant.io/integrations/event.mqtt/||
@@ -34,7 +34,7 @@ At moment only this sensor/device are supported:
 |Switch|yes|https://www.home-assistant.io/integrations/switch.mqtt/|TMQTTSwitch|
 |Tag scanner|no|https://www.home-assistant.io/integrations/tag.mqtt/|TMQTTTagScanner|
 |Text|yes|https://www.home-assistant.io/integrations/text.mqtt/|TMQTTText|
-|Time||https://www.home-assistant.io/integrations/time.mqtt/|TMQTTTime|
+|Time|yes|https://www.home-assistant.io/integrations/time.mqtt/|TMQTTTime|
 |Update|yes|https://www.home-assistant.io/integrations/update.mqtt/|TMQTTUpdate|
 |Vacuum||https://www.home-assistant.io/integrations/vacuum.mqtt/||
 |Valve|yes|https://www.home-assistant.io/integrations/valve.mqtt/|TMQTTValve|
