@@ -48,13 +48,21 @@ The mqtt_device_info.xls file contains the previous table and the data extracted
 
 The library itself is compatible with Linux and Windows, my main usage is with Raspberry Pi!
 
-#Changelog
+# Changelog
+
 Version of 2026.05.07
+
   Added
+  
     + TMQTTDate, TMQTTDateTime, TMQTTTime
 
+
 Version of 2026.03.04
+
   Added
+  
     + TMQTTNumber
+    
   Removed
+  
     - removed ObjectId because deprecated by Home Assistant
